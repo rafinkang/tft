@@ -67,8 +67,8 @@ for tier_info in tier_dice['challenger'] : # tier_dice : 'challenger', 'grandmas
 #         "participants": [유저들 puuid, ..........]
 #     },
 #     "info": {
-#         "game_datetime": 1620724067851,
-#         "game_length": 2132.9296875,
+#         "game_datetime": 1620724067851, # unix timestamp
+#         "game_length": 2132.9296875, # 초단위 게임 길이
 #         "game_version": "Version 11.9.372.2066 (Apr 23 2021/10:28:09) [PUBLIC] <releases 11.9="">",
 #         "participants": [
 #             {
@@ -77,21 +77,21 @@ for tier_info in tier_dice['challenger'] : # tier_dice : 'challenger', 'grandmas
 #                     "skin_ID": 5,
 #                     "species": "PetAkaliDragon"
 #                 },
-#                 "gold_left": 5,
-#                 "last_round": 30,
-#                 "level": 8,
-#                 "placement": 6,
-#                 "players_eliminated": 0,
+#                 "gold_left": 5, # 게임 끝난 후 남은 골드
+#                 "last_round": 30, # 라운드 수
+#                 "level": 8, # 레벨
+#                 "placement": 6, # 순위
+#                 "players_eliminated": 0, # 제거한 플레이어 수
 #                 "puuid": "SUDMWoARtQDJpGPPlYRM7KtDVV0TvkHhUcxGa5cnQLhCSART16NBNeX3Mv0SP8RrU4LScmQ7v6XB6w",
-#                 "time_eliminated": 1722.265625,
-#                 "total_damage_to_players": 50,
+#                 "time_eliminated": 1722.265625, # 참가자가 제거되기 까지 걸리 초
+#                 "total_damage_to_players": 50, # 다른 참가자에게 준 피해량
 #                 "traits": [
 #                     {
-#                         "name": "Set5_Cavalier",
-#                         "num_units": 1,
-#                         "style": 0,
-#                         "tier_current": 0,
-#                         "tier_total": 3
+#                         "name": "Set5_Cavalier", # 시너지 종류
+#                         "num_units": 1, # 해당 시너지 기물 수
+#                         "style": 0, # tier_current의 style
+#                         "tier_current": 0, # 해당 시너지의 현재 단계
+#                         "tier_total": 3 # 해당 시너지의 총 단계가 몇개 있나
 #                     },
 #                     {
 #                         "name": "Set5_Forgotten",
@@ -166,11 +166,11 @@ for tier_info in tier_dice['challenger'] : # tier_dice : 'challenger', 'grandmas
 #                 ],
 #                 "units": [
 #                     {
-#                         "character_id": "TFT5_Poppy",
-#                         "items": [],
-#                         "name": "",
-#                         "rarity": 0,
-#                         "tier": 2
+#                         "character_id": "TFT5_Poppy", # 기물 아이디(이름 포함)
+#                         "items": [], # 기물이 착용중인 아이템
+#                         "name": "", # 종종 비워둔데(항상인듯)
+#                         "rarity": 0, # 코스트 - 1 값
+#                         "tier": 2 # 몇 성인가
 #                     },
 #                     {
 #                         "character_id": "TFT5_Varus",

@@ -30,17 +30,17 @@ class DbConn:
         ex) data = (1, 'test') 
         execute(sql, data)
         """
-
+        
         try:
             curs = self.connection.cursor()
-            if args == None:
-                result = curs.execute(sql)
-            else:
-                result = curs.execute(sql, args)
-                
-            if result:
-                return self.dictfetchall(curs) # dictionary로 return
             
+            if args == None:
+                curs.execute(sql)
+            else:
+                curs.execute(sql, args)
+
+            return self.dictfetchall(curs) # dictionary로 return
+                
         except Exception as e:
             return e    
         
@@ -92,16 +92,14 @@ class DbConn:
             self.connection.commit()
             self.connection.close()
 
-    def dictfetchall(self, cursor):
-        desc = cursor.description
-        return [
-            dict(zip([col[0] for col in desc], row))
-            for row in cursor.fetchall()
-        ]
+    def dictfetchall(self, curs):
+
+        columns = [col[0] for col in curs.description]
+        rows = [dict(zip(columns, row)) for row in curs.fetchall()]
+
+        return rows
         
         
 
 dbtest = DbConn()
-print('1111111', dbtest)
-
 print(dbtest.select('select * from items_info'))

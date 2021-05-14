@@ -43,6 +43,7 @@ class DbConn:
                 return curs.fetchall()
             
         except Exception as e:
+            print(e)
             return e    
         
         finally:
@@ -68,6 +69,7 @@ class DbConn:
                 return self.dictfetchall(curs)
             
         except Exception as e:
+            print(e)
             return e    
         
         finally:
@@ -90,11 +92,14 @@ class DbConn:
             else:
                 result = curs.execute(sql, args)
                 
-            print(result)
-            return result
+            if result:
+                return True
+            else:
+                raise Exception('에러발생!! ----- \n '+sql)
             
         except Exception as e:
-            return e    
+            print(e)
+            return e
         
         finally:
             conn.commit()
@@ -115,9 +120,13 @@ class DbConn:
             else:
                 result = curs.executemany(sql, args)
                 
-            return result
+            if result:
+                return True
+            else:
+                raise Exception('에러발생!! ----- \n '+sql)
             
         except Exception as e:
+            print(e)
             return e
             
         finally:
@@ -132,7 +141,7 @@ class DbConn:
         ]
             
             
-if __name__ == "__main__":
+# if __name__ == "__main__":
 #     db = DbConn()
 #     sql = 'select * from crawl_color'
 #     print(db.select(sql))
@@ -143,128 +152,8 @@ if __name__ == "__main__":
 #     data = [['1','1','1'], ['2','2','2'], ['3','3','3']]
 #     print(db.executemany(sql, data))
 
-    db = DbConn()
-    print(db.select('select * from items_info'))
+    # db = DbConn()
+    # print(db.selectdict('select * from items_info'))
     # db.execute("insert into items_info (ii_id, ii_name, ii_is_unique, ii_is_shadow) values (%d, %s, %d, %d)", (6,"Negatron Cloak", 0, 0))
-    db.execute(f"insert into items_info (ii_id, ii_name, ii_is_unique, ii_is_shadow) values ({6}, {'Negatron Cloak'}, {0}, {0})")
-    print(db.select('select * from items_info'))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# import mysql.connector
-
-# class DbConn:
-#     def __init__(
-#         self, 
-#         host = "jhta.cpg6w8n0aifr.ap-northeast-2.rds.amazonaws.com", 
-#         dbname = "tft", 
-#         user = "scott", 
-#         password = "tigertiger", 
-#         port = "3306"
-#         ):
-#         self.host = host
-#         self.dbname = dbname
-#         self.user = user
-#         self.password = password
-#         self.port = port
-#         self.connection = mysql.connector.connect(
-#             host = self.host,
-#             user = self.user,
-#             passwd = self.password,
-#             database = self.dbname
-#             )
-#         # self.user, self.password, self.host+":"+self.port+"/"+self.dbname
-        
-        
-
-#     def select(self, sql, args=None):
-#         """
-#         단일 행 select 실행 
-#         ex) data = (1, 'test') 
-#         execute(sql, data)
-#         """
-        
-#         try:
-#             curs = self.connection.cursor()
-            
-#             if args == None:
-#                 curs.execute(sql)
-#             else:
-#                 curs.execute(sql, args)
-
-#             return self.dictfetchall(curs) # dictionary로 return
-                
-#         except Exception as e:
-#             return e    
-            
-#     def execute(self, sql, args=None):
-#         """
-#         단일 행 실행 
-#         ex) data = (1, 'test') 
-#         execute(sql, data)
-#         """
-#         try:
-#             curs = self.connection.cursor()
-#             if args == None:
-#                 curs.execute(sql)
-#             else:
-#                 curs.execute(sql, args)
-            
-#         except Exception as e:
-#             return e    
-        
-#         finally:
-#             self.connection.commit()
-#             return True
-            
-#     def executemany(self, sql, args=None):
-#         """
-#         다중 행 실행 
-#         ex) data = [[1, 'test'],[2, 'test2'],[3, 'test3'],[4, 'test4']]
-#         executemany(sql, data)
-#         """
-
-#         try:
-#             curs = self.connection.cursor()
-#             if args == None:
-#                 curs.executemany(sql)
-#             else:
-#                 curs.executemany(sql, args)
-                
-#         except Exception as e:
-#             return e
-            
-#         finally:
-#             self.connection.commit()
-#             return True
-
-#     def dictfetchall(self, curs):
-
-#         columns = [col[0] for col in curs.description]
-#         rows = [dict(zip(columns, row)) for row in curs.fetchall()]
-
-#         return rows
-    
-#     def close(self):
-#         self.connection.close()
-        
-
-# dbtest = DbConn()
-# print(dbtest.select('select * from items_info'))
-# # dbtest.execute("insert into items_info (ii_id, ii_name, ii_is_unique, ii_is_shadow) values (%d, %s, %d, %d)", (6,"Negatron Cloak", 0, 0))
-# dbtest.execute(f"insert into items_info (ii_id, ii_name, ii_is_unique, ii_is_shadow) values ({6}, {'Negatron Cloak'}, {0}, {0})")
-# print(dbtest.select('select * from items_info'))
-# dbtest.close()
+    # # db.execute(f'insert into items_info (ii_id, ii_name, ii_is_unique, ii_is_shadow) values (6, "Negatron Cloak", 0, 0)')
+    # print(db.select('select * from items_info'))

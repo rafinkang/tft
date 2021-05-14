@@ -1,7 +1,7 @@
 import requests as req
 
 # 게임 정보 가져오기
-def get_match_info(params, user_name = None, summoner_id = None) :
+def get_match_list(params, user_name = None, summoner_id = None) :
     user_name = user_name
     user_info_url = 'https://kr.api.riotgames.com/tft/summoner/v1/summoners/'
 
@@ -15,20 +15,22 @@ def get_match_info(params, user_name = None, summoner_id = None) :
         user_puuid = user_info['puuid']
 
         match_url = 'https://asia.api.riotgames.com/tft/match/v1/matches/by-puuid/%s/ids'%user_puuid
-        params['count'] = 2
+        params['count'] = 20
         match_res = req.get(match_url, params = params)
 
         if match_res.status_code == 200 :
             match_list = match_res.json() # type of dict, 경기 리스트, 최근부터 과거순으로 정렬되어 있음(아마도)
+            return match_list
 
-            for match in match_list : # 각 경기에 대한 상세 정보
-                match_info_url = 'https://asia.api.riotgames.com/tft/match/v1/matches/' + match
-                match_info_res = req.get(match_info_url, params = params)
-                
-                if match_info_res.status_code == 200 :
-                    match_info = match_info_res.json()
-                    print(match_info)
-                    print('==============================================================================')
+def get_match_info(params, match_list) :
+    for match in match_list : # 각 경기에 대한 상세 정보
+        match_info_url = 'https://asia.api.riotgames.com/tft/match/v1/matches/' + match
+        match_info_res = req.get(match_info_url, params = params)
+        
+        if match_info_res.status_code == 200 :
+            match_info = match_info_res.json()
+            print(match_info)
+            print('==============================================================================')
 
 
 # 상위 티어 유저 정보 가져오기
@@ -53,7 +55,8 @@ for tier_info in tier_dice['challenger'] : # tier_dice : 'challenger', 'grandmas
     summoner_id = tier_info['summonerId']
 
     print(summoner_name)
-    get_match_info(params, summoner_id = summoner_id)
+    match_list = get_match_list(params, summoner_id = summoner_id) # 게임 ID list
+    get_match_info(params, match_list)
 
 
 

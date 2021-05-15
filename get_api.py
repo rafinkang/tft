@@ -1,38 +1,5 @@
 import requests as req
 
-# 게임 정보 가져오기
-def get_match_list(params, user_name = None, summoner_id = None) :
-    user_name = user_name
-    user_info_url = 'https://kr.api.riotgames.com/tft/summoner/v1/summoners/'
-
-    if user_name != None : user_info_url = user_info_url + 'by-name/' + user_name
-    if summoner_id != None : user_info_url = user_info_url + summoner_id
-
-    user_info_res = req.get(user_info_url, params = params)
-
-    if user_info_res.status_code == 200 :
-        user_info = user_info_res.json() # type of dict, 유저 정보
-        user_puuid = user_info['puuid']
-
-        match_url = 'https://asia.api.riotgames.com/tft/match/v1/matches/by-puuid/%s/ids'%user_puuid
-        params['count'] = 20
-        match_res = req.get(match_url, params = params)
-
-        if match_res.status_code == 200 :
-            match_list = match_res.json() # type of dict, 경기 리스트, 최근부터 과거순으로 정렬되어 있음(아마도)
-            return match_list
-
-def get_match_info(params, match_list) :
-    for match in match_list : # 각 경기에 대한 상세 정보
-        match_info_url = 'https://asia.api.riotgames.com/tft/match/v1/matches/' + match
-        match_info_res = req.get(match_info_url, params = params)
-        
-        if match_info_res.status_code == 200 :
-            match_info = match_info_res.json()
-            print(match_info)
-            print('==============================================================================')
-
-
 # 상위 티어 유저 정보 가져오기
 def get_top_tier_info(params) :
     tier_dict = {'challenger' : [], 'grandmaster' : [], 'master' : []}
@@ -46,17 +13,61 @@ def get_top_tier_info(params) :
     
     return tier_dict
 
+# 사용자 puuid 가져오기
+def get_puuid(params, user_name = None, summoner_id = None) :
+    user_name = user_name
+    user_info_url = 'https://kr.api.riotgames.com/tft/summoner/v1/summoners/'
+    user_puuid = None
 
-params = {'api_key' : 'RGAPI-1aedcf5c-6662-4861-85f0-db4176309fcc'} # api key
-tier_dice = get_top_tier_info(params)
+    if user_name != None : user_info_url = user_info_url + 'by-name/' + user_name
+    if summoner_id != None : user_info_url = user_info_url + summoner_id
 
-for tier_info in tier_dice['challenger'] : # tier_dice : 'challenger', 'grandmaster', 'master'
+    user_info_res = req.get(user_info_url, params = params)
+
+    if user_info_res.status_code == 200 :
+        user_info = user_info_res.json() # type of dict, 유저 정보
+        user_puuid = user_info['puuid']
+    
+    return user_puuid
+
+# 매치 리스트 가져오기
+def get_match_list(params, summoner_puuid) :
+    match_url = 'https://asia.api.riotgames.com/tft/match/v1/matches/by-puuid/%s/ids'%summoner_puuid
+    params['count'] = 20 # 몇 경기 가져올 것인가
+    match_res = req.get(match_url, params = params)
+    match_list = []
+
+    if match_res.status_code == 200 :
+        match_list = match_res.json() # type of dict, 경기 리스트, 최근부터 과거순으로 정렬되어 있음(아마도)
+
+    return match_list
+
+# 각 매치에 대한 상세 정보
+def get_match_info(params, match_list) : 
+    for match in match_list :
+        match_info_url = 'https://asia.api.riotgames.com/tft/match/v1/matches/' + match
+        match_info_res = req.get(match_info_url, params = params)
+        
+        if match_info_res.status_code == 200 :
+            match_info = match_info_res.json()
+            print(match_info)
+            print('==============================================================================')
+
+
+
+params = {'api_key' : 'RGAPI-91c42e63-0451-47a0-ae44-b4f32bb18174'} # api key
+
+tier_dict = get_top_tier_info(params) # 티어 dictionary 가져오기
+
+print('tier_dict', tier_dict)
+for tier_info in tier_dict['challenger'] : # tier_dict : 'challenger', 'grandmaster', 'master'
     summoner_name = tier_info['summonerName']
     summoner_id = tier_info['summonerId']
 
-    print(summoner_name)
-    match_list = get_match_list(params, summoner_id = summoner_id) # 게임 ID list
-    get_match_info(params, match_list)
+    summoner_puuid = get_puuid(params, summoner_id = summoner_id) # 사용자 puuid 가져오기
+    match_list = get_match_list(params, summoner_puuid) # 사용자가 참여한 매치 리스트 가져오기 (default = 20개)
+    get_match_info(params, match_list) # 각 매치에 대한 상세정보 조회
+
 
 
 

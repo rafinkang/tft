@@ -193,9 +193,7 @@ def insert_match_info(params):
                     u_tier = unit['tier']
                     
                     unit_sql = f"""INSERT INTO unit (p_no, u_character_id, u_items_1, u_items_2, u_items_3, u_rarity, u_tier) 
-                    VALUES ({p_no}, '{u_character_id}', {u_items_1}, {u_items_2}, {u_items_3}, {u_rarity}, {u_tier}) 
-                    on duplicate key update u_items_1 = {u_items_1}, u_items_2 = {u_items_2}, u_items_3 = {u_items_3}, u_rarity = {u_rarity}, u_tier = {u_tier}
-                    ;
+                    VALUES ({p_no}, '{u_character_id}', {u_items_1}, {u_items_2}, {u_items_3}, {u_rarity}, {u_tier});
                     """
                     
                     db.execute(unit_sql)

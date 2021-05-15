@@ -1,5 +1,6 @@
 import requests as req
 import dbConn
+import dbConn2
 from time import sleep
 
 # 상위 티어 유저 정보 가져오기
@@ -119,7 +120,7 @@ def insert_match_list(params) :
 
 # get_match_info 매치 상세정보 가져와서 각 테이블에 순차적으로 넣어주기.
 def insert_match_info(params):
-    db = dbConn.DbConn()
+    db = dbConn2.DbConn()
     
     # 1. match_list 테이블에서 ml_check 가 0인것들 리스트 가져오기
     # sql = "SELECT * FROM match_list WHERE ml_check = 0"
@@ -202,10 +203,12 @@ def insert_match_info(params):
         update_sql = f"UPDATE match_list set ml_check = 1 where ml_match = '{match_id}';"
         db.execute(update_sql)
         cnt += 1
-        
+        db.commit()
         print(cnt, '/', totallen)
         print(match_id, "데이터 입력 완료 !!")
-        # sleep(0.5)
+        sleep(0.5)
+        
+    db.close()
 
 # 실행단
 if __name__ == "__main__":

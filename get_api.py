@@ -175,7 +175,11 @@ def insert_match_info(params):
                     t_tier_current = trait['tier_current']
                     t_tier_total = trait['tier_total']
                     
-                    trait_sql = f"INSERT INTO trait (p_no, t_name, t_num_units, t_style, t_tier_current, t_tier_total) VALUES ({p_no}, '{t_name}', {t_num_units}, {t_style}, {t_tier_current}, {t_tier_total});"
+                    trait_sql = f"""INSERT INTO trait (p_no, t_name, t_num_units, t_style, t_tier_current, t_tier_total) 
+                    VALUES ({p_no}, '{t_name}', {t_num_units}, {t_style}, {t_tier_current}, {t_tier_total})
+                    on duplicate key update t_num_units = {t_num_units}, t_style = {t_style}, t_tier_current = {t_tier_current}, t_tier_total = {t_tier_total}
+                    ;
+                    """
                     
                     db.execute(trait_sql)
         
@@ -188,7 +192,11 @@ def insert_match_info(params):
                     u_rarity = unit['rarity']
                     u_tier = unit['tier']
                     
-                    unit_sql = f"INSERT INTO unit (p_no, u_character_id, u_items_1, u_items_2, u_items_3, u_rarity, u_tier) VALUES ({p_no}, '{u_character_id}', {u_items_1}, {u_items_2}, {u_items_3}, {u_rarity}, {u_tier});"
+                    unit_sql = f"""INSERT INTO unit (p_no, u_character_id, u_items_1, u_items_2, u_items_3, u_rarity, u_tier) 
+                    VALUES ({p_no}, '{u_character_id}', {u_items_1}, {u_items_2}, {u_items_3}, {u_rarity}, {u_tier}) 
+                    on duplicate key update u_items_1 = {u_items_1}, u_items_2 = {u_items_2}, u_items_3 = {u_items_3}, u_rarity = {u_rarity}, u_tier = {u_tier}
+                    ;
+                    """
                     
                     db.execute(unit_sql)
                     

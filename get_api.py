@@ -1,5 +1,6 @@
 import requests as req
 import dbConn
+from time import sleep
 
 # 상위 티어 유저 정보 가져오기
 def get_top_tier_info(params) :
@@ -69,7 +70,25 @@ def get_match_info(params, match_list) :
 
 params = {'api_key' : 'RGAPI-91c42e63-0451-47a0-ae44-b4f32bb18174'} # api key
 
-print(get_top_tier_info(params)) # 티어 dictionary 가져오기
+# print(get_top_tier_info(params)) # 티어 dictionary 가져오기
+
+
+
+def insert_puuid(params) :
+    db = dbConn.DbConn()
+    sql = "SELECT * FROM summoner WHERE s_puuid IS null"
+    puuid_is_null = db.selectdict(sql)
+    
+    for i in puuid_is_null:
+        puuid = get_puuid(params, summoner_id=i['s_id'])
+        sql = f"UPDATE summoner SET s_puuid = '{puuid}' WHERE s_no={i['s_no']}"
+        db.execute(sql)
+        sleep(1)
+    
+insert_puuid(params)
+
+
+
 
 # for tier_info in tier_dict['challenger'] : # tier_dict : 'challenger', 'grandmaster', 'master'
 #     summoner_name = tier_info['summonerName']

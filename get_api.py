@@ -1,17 +1,29 @@
 import requests as req
+import dbConn
 
 # 상위 티어 유저 정보 가져오기
 def get_top_tier_info(params) :
-    tier_dict = {'challenger' : [], 'grandmaster' : [], 'master' : []}
+    # tier_dict = {'challenger' : [], 'grandmaster' : [], 'master' : []}
+    tier_list = ['challenger', 'grandmaster', 'master']
     tier_url = 'https://kr.api.riotgames.com/tft/league/v1/%s'
+    res_list = []
 
-    for tier in tier_dict :
+    for tier in tier_list :
         res_tier = req.get(tier_url%tier, params = params)
 
         if res_tier.status_code == 200 :
-            tier_dict[tier] = res_tier.json()['entries']
+            tier_summ_list = res_tier.json()['entries']
+            insert_data_list = []
     
-    return tier_dict
+            for tier_info in tier_summ_list : # 각 티어별 소환사 정보
+                insert_data_list.append([tier_info['summonerId'], tier_info['summonerName'], tier_info['leaguePoints'], tier])
+
+            db = dbConn.DbConn()
+            sql = "insert ignore into summoner(s_id, s_name, s_points, s_tier) values(%s, %s, %s, %s);"
+            res = db.executemany(sql, insert_data_list)
+            res_list.append(res)
+    
+    return res_list
 
 # 사용자 puuid 가져오기
 def get_puuid(params, user_name = None, summoner_id = None) :
@@ -57,16 +69,15 @@ def get_match_info(params, match_list) :
 
 params = {'api_key' : 'RGAPI-91c42e63-0451-47a0-ae44-b4f32bb18174'} # api key
 
-tier_dict = get_top_tier_info(params) # 티어 dictionary 가져오기
+print(get_top_tier_info(params)) # 티어 dictionary 가져오기
 
-print('tier_dict', tier_dict)
-for tier_info in tier_dict['challenger'] : # tier_dict : 'challenger', 'grandmaster', 'master'
-    summoner_name = tier_info['summonerName']
-    summoner_id = tier_info['summonerId']
+# for tier_info in tier_dict['challenger'] : # tier_dict : 'challenger', 'grandmaster', 'master'
+#     summoner_name = tier_info['summonerName']
+#     summoner_id = tier_info['summonerId']
 
-    summoner_puuid = get_puuid(params, summoner_id = summoner_id) # 사용자 puuid 가져오기
-    match_list = get_match_list(params, summoner_puuid) # 사용자가 참여한 매치 리스트 가져오기 (default = 20개)
-    get_match_info(params, match_list) # 각 매치에 대한 상세정보 조회
+#     summoner_puuid = get_puuid(params, summoner_id = summoner_id) # 사용자 puuid 가져오기
+#     match_list = get_match_list(params, summoner_puuid) # 사용자가 참여한 매치 리스트 가져오기 (default = 20개)
+#     get_match_info(params, match_list) # 각 매치에 대한 상세정보 조회
 
 
 

@@ -39,7 +39,7 @@ class DbConn:
             else:
                 result = curs.execute(sql, args)
                 
-            if result:
+            if result != None:
                 return curs.fetchall()
             
         except Exception as e:
@@ -65,7 +65,7 @@ class DbConn:
             else:
                 result = curs.execute(sql, args)
                 
-            if result:
+            if result != None:
                 return self.dictfetchall(curs)
             
         except Exception as e:
@@ -85,14 +85,13 @@ class DbConn:
         conn = pymysql.connect(
             host=self.host, user=self.user, password=self.password, db=self.db, charset=self.charset)
         try:
-            print(sql, args)
             curs = conn.cursor()
             if args == None:
                 result = curs.execute(sql)
             else:
                 result = curs.execute(sql, args)
                 
-            if result:
+            if result != None:
                 return curs.lastrowid
             else:
                 raise Exception('에러발생!! ----- \n '+sql)
@@ -120,7 +119,7 @@ class DbConn:
             else:
                 result = curs.executemany(sql, args)
                 
-            if result:
+            if result != None:
                 return True
             else:
                 raise Exception('에러발생!! ----- \n '+sql)

@@ -20,7 +20,7 @@ def get_top_tier_info(params) :
                 insert_data_list.append([tier_info['summonerId'], tier_info['summonerName'], tier_info['leaguePoints'], tier])
 
             db = dbConn.DbConn()
-            sql = "insert ignore into summoner(s_id, s_name, s_points, s_tier) values(%s, %s, %s, %s) on duplicate key update s_name = values(s_name), s_points = values(s_points), s_tier = values(s_tier);"
+            sql = "insert into summoner(s_id, s_name, s_points, s_tier) values(%s, %s, %s, %s) on duplicate key update s_name = values(s_name), s_points = values(s_points), s_tier = values(s_tier);"
             res = db.executemany(sql, insert_data_list)
             res_list.append(res)
     
@@ -44,9 +44,9 @@ def get_puuid(params, user_name = None, summoner_id = None) :
     return user_puuid
 
 # 매치 리스트 가져오기
-def get_match_list(params, summoner_puuid) :
+def get_match_list(params, summoner_puuid, count = 20) :
     match_url = 'https://asia.api.riotgames.com/tft/match/v1/matches/by-puuid/%s/ids'%summoner_puuid
-    params['count'] = 20 # 몇 경기 가져올 것인가
+    params['count'] = count # 몇 경기 가져올 것인가
     match_res = req.get(match_url, params = params)
     match_list = []
 
@@ -81,7 +81,39 @@ def insert_puuid(params) :
         db.execute(sql)
         sleep(1)
     
-
+# 매치 리스트 채워넣기
+def insert_match_list(params) :
+    db = dbConn.DbConn()
+    match_list = []
+    
+    # puuid 리스트 만들어서 
+    sql = "SELECT s_puuid FROM summoner where s_puuid IS not null"
+    puuid_list = db.selectdict(sql)
+    # puuid_list = db.select(sql)
+    # print(type(puuid_list), puuid_list)
+    
+    # get_match_list 를 통해 api 호출
+    i = 1
+    j = len(puuid_list)
+    for pl in puuid_list:
+        puuid = pl['s_puuid']
+        get_match = get_match_list(params, puuid, count = 30)
+        # match_list.append(get_match)
+        match_list.extend(get_match)
+        
+        print(i, '/', j, '-----진행중 !!')
+        i += 1
+        sleep(1)
+    
+    # 중복을 제거 한 후 
+    print('전체 리스트:', len(match_list))
+    match_list = list(set(match_list))
+    print('중복 제거 리스트:', len(match_list))
+    
+    # 인서트
+    sql = "insert into match_list(ml_match) values(%s) on duplicate key update timestamp = CURRENT_TIMESTAMP();"
+    res = db.executemany(sql, match_list)
+    print('db insert:', res)
 
 
 # 실행단
@@ -89,11 +121,14 @@ if __name__ == "__main__":
 
     params = {'api_key' : 'RGAPI-91c42e63-0451-47a0-ae44-b4f32bb18174'} # api key
 
-    # print(get_top_tier_info(params)) # 티어 dictionary 가져오기
+    # 1. 티어 dictionary 가져오기
+    # print(get_top_tier_info(params)) 
+    
+    # 2. 서머너 테이블 가져와서 s_puuid 없는 애들 채워 넣기 
+    # insert_puuid(params) 
 
-    # insert_puuid(params) # 서머너 테이블 가져와서 s_puuid 없는 애들 채워 넣기 
-
-
+    # 3. 매치 리스트 채워 넣기 (중복제거해서 넣어야 해)
+    insert_match_list(params)
 
 
 

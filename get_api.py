@@ -19,7 +19,7 @@ def get_top_tier_info(params) :
                 insert_data_list.append([tier_info['summonerId'], tier_info['summonerName'], tier_info['leaguePoints'], tier])
 
             db = dbConn.DbConn()
-            sql = "insert ignore into summoner(s_id, s_name, s_points, s_tier) values(%s, %s, %s, %s);"
+            sql = "insert ignore into summoner(s_id, s_name, s_points, s_tier) values(%s, %s, %s, %s) on duplicate key update s_name = values(s_name), s_points = values(s_points), s_tier = values(s_tier);"
             res = db.executemany(sql, insert_data_list)
             res_list.append(res)
     

@@ -93,7 +93,7 @@ class DbConn:
                 result = curs.execute(sql, args)
                 
             if result:
-                return True
+                return curs.lastrowid
             else:
                 raise Exception('에러발생!! ----- \n '+sql)
             
